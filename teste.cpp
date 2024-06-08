@@ -30,5 +30,7 @@ int main() {
     // Teste de tamanho atualizado
     std::cout << "Tamanho da Trie atualizado: " << trie.size() << std::endl;  // Deve imprimir 4
 
+    trie.draw();
+
     return 0;
 }

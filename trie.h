@@ -18,7 +18,8 @@ public:
     bool empty() const;
 
     std::size_t size() const;
-    
+
+    void draw() const;
 
 private:
     struct NoTrie {
@@ -53,6 +54,8 @@ private:
 
     };
 
+    void draw(NoTrie* node, std::string prefix) const;
+
     void destroy(NoTrie* node);
 
     NoTrie* root;
@@ -66,7 +69,7 @@ private:
 template<typename T>
 structures::Trie<T>::Trie() {
     root = new NoTrie();
-    size_ = 0;
+    size_ = 1;
 }
 
 template<typename T>
@@ -82,12 +85,13 @@ void structures::Trie<T>::insert(const T& data) {
         int index = ch - 'a';
         if (current->filhos[index] == nullptr) {
             current->filhos[index] = new NoTrie(ch);
+            size_++;
         }
         current = current->filhos[index];
     }
     if (current->comprimento == 0) {
         current->comprimento = data.size();
-        size_++;
+        //size_++; // se size_ for o número de palavras na árvore, deve ser incrementado aqui
     }
 }
 
@@ -119,5 +123,24 @@ void structures::Trie<T>::destroy(NoTrie* node) {
             }
         }
         delete node;
+    }
+}
+
+template<typename T>
+void structures::Trie<T>::draw() const {
+    draw(root, "");
+}
+
+template<typename T>
+void structures::Trie<T>::draw(NoTrie* node, std::string prefix) const {
+    if (node != nullptr) {
+        if (node->comprimento > 0) {
+            std::cout << prefix << std::endl;
+        }
+        for (int i = 0; i < 26; ++i) {
+            if (node->filhos[i] != nullptr) {
+                draw(node->filhos[i], prefix + node->filhos[i]->letra);
+            }
+        }
     }
 }
