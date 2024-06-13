@@ -18,6 +18,9 @@ public:
 
     bool contains(const T& data) const; // Verifica se a árvore já possui uma palavra
 
+
+    void prefix_identification(const T& data) const; // Verifica quantas palavras possuem o prefixo passado para a função
+
     bool empty() const; // Verifica se a árvore está vazia
 
     std::size_t size() const; // Retorna o tamanho da árvore
@@ -53,7 +56,7 @@ private:
             // Se isso for verdade, significa que percorremos todos os caracteres
             // e estamos no nó que deveria marcar o final da palavra 
             if (index == data.size()) {
-                return comprimento > 0;  // Se comprimento > 0 se este nó realmente representa o final da palavra
+                return true;  // Se comprimento > 0 se este nó realmente representa o final da palavra
             }
             char ch = data[index]; // Próximo caractere da palavra
             int child_index = ch - 'a'; // Cálculo para saber o índice do filho correspondente à letra
@@ -87,6 +90,8 @@ private:
     void destroy(NoTrie* node); // Método utilizado para desalocar os nós da árvore
 
     void draw(NoTrie* node, std::string prefix, bool isTail) const; // Método utilizado para desenhar a árvore no terminal
+
+    int find_prefix(NoTrie* node) const;  // Acha o prefixo na trie
 
     NoTrie* root;
     std::size_t size_;
@@ -133,6 +138,50 @@ bool structures::Trie<T>::contains(const T& data) const { // Verifica se contém
     } else {
         return false;
     }
+}
+
+template<typename T>
+int structures::Trie<T>::find_prefix(NoTrie* node) const {
+
+    int cont = 0;
+
+    if (node == nullptr) {
+        return 0;
+    }
+    if (node->comprimento > 0) {
+        cont++;
+    }
+    for (int i = 0; i < 26; ++i) { // Percorre todos os filhos do nó
+        if (node->filhos[i] != nullptr) { // Se tiver filho nessa posição
+            // Chama recursivamente a função com seu filho, passando como parâmetro o nó dele e
+            // o prefixo como o que foi passado anteriormente + a letra desse nó,
+            // assim, as letras vão sendo concatenadas até formar uma palavra
+            cont += find_prefix(node->filhos[i]);
+        }
+    }
+    return cont;
+}
+
+template<typename T>
+void structures::Trie<T>::prefix_identification(const T& data) const {
+    if (!contains(data)) {
+        std::cout << data << " is not prefix\n";
+        return;
+    }
+
+    NoTrie* current = root; // Começa pela raiz
+    for (std::size_t i = 0; i < data.size(); ++i) { // Iteração sobre os caracteres da palavra
+        char ch = data[i]; // Caractere dessa iteração
+        int index = ch - 'a'; // Calcula a posição do caractere no vetor
+    
+        current = current->filhos[index]; // Nó atual passa a ser o filho, correspondente ao caractere dessa iteração
+    }
+    int words_prefix = find_prefix(current);
+    std::cout << data << " is prefix of " << words_prefix << " words\n";
+
+    if (current->comprimento > 0) {
+        std::cout << data << " is in (" << current->posicao << "," << current->comprimento << ")\n";
+    }    
 }
 
 template<typename T>
@@ -203,6 +252,8 @@ void structures::Trie<T>::draw(NoTrie* node, std::string prefix, bool isTail) co
         }
     }
 }
+
+
 
 template<typename T>
 void structures::Trie<T>::printAllNodes() const { // Printa as informações de todos os nós, iniciando a busca dos nós pela raiz
