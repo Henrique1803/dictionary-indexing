@@ -180,7 +180,7 @@ void structures::Trie<T>::prefix_identification(const T& data) const {
     std::cout << data << " is prefix of " << words_prefix << " words\n";
 
     if (current->comprimento > 0) {
-        std::cout << data << " is in (" << current->posicao << "," << current->comprimento << ")\n";
+        std::cout << data << " is at (" << current->posicao << "," << current->comprimento << ")\n";
     }    
 }
 
